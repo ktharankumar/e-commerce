@@ -1,0 +1,9 @@
+_build
+ebin
+*.beam
+rebar3.crashdump
+erl_crash.dump
+*.dump
+*.log
+tmp
+.DS_Store

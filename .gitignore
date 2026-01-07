@@ -1,0 +1,15 @@
+# --- IDEs ---
+.idea/
+*.iml
+
+# --- Java/Maven ---
+**/target/
+*.jar
+*.class
+
+# --- Erlang/Rebar3 ---
+**/_build/
+*.beam
+erl_crash.dump
+.rebar3/
+
