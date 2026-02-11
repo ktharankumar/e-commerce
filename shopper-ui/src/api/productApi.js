@@ -17,3 +17,7 @@ export function getProducts(category) {
 export function getProduct(id) {
   return http.get(`/v1/products/${id}`);
 }
+
+export function createProduct(data) {
+  return http.post("/v1/products", data);
+}

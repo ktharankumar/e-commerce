@@ -146,3 +146,37 @@ html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); f
 .toast-success { border-color: #a7f3d0; }
 .toast-error { border-color: #fecaca; }
 .panel.success { border-color: #a7f3d0; }
+
+/* ---- Create Product Form ---- */
+.form-panel { max-width: 720px; }
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.form-full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-weight: 800; font-size: 13px; color: var(--muted); }
+.form-input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--brand); }
+.form-textarea { resize: vertical; min-height: 70px; font-family: inherit; }
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn-primary { background: var(--brand); color: white; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-ghost-dark { background: transparent; color: var(--text); border: 1px solid var(--border); }
+

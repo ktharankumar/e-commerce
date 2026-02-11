@@ -9,6 +9,7 @@ import CartPage from "./pages/CartPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
+import CreateProductPage from "./pages/CreateProductPage.jsx";
 
 export default function App() {
   const [toast, setToast] = useState(null);
@@ -26,6 +27,7 @@ export default function App() {
       <Header
         onGoProducts={() => nav("/")}
         onGoCart={() => nav("/cart")}
+        onGoCreate={() => nav("/create-product")}
       />
 
       {toast ? (
@@ -39,6 +41,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<ProductsPage setToast={setToast} />} />
+        <Route path="/create-product" element={<CreateProductPage setToast={setToast} />} />
         <Route path="/cart" element={<CartPage setToast={setToast} />} />
         <Route path="/checkout" element={<CheckoutPage setToast={setToast} />} />
         <Route path="/payment" element={<PaymentPage setToast={setToast} />} />
