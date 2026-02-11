@@ -4,18 +4,17 @@ import { http } from "./http";
 export const DEFAULT_USER_ID = 1;
 
 export function getCart(userId = DEFAULT_USER_ID) {
-  return http.get(`/api/v1/cart/${userId}`);
+  return http.get(`/v1/carts/${userId}`);
 }
 
 export function addItem(userId = DEFAULT_USER_ID, productId, quantity = 1) {
-  return http.post(`/api/v1/cart/${userId}/items`, { productId, quantity });
+  return http.post(`/v1/carts/${userId}/items`, { productId, quantity });
 }
 
 export function removeItem(userId = DEFAULT_USER_ID, productId) {
-  return http.del(`/api/v1/cart/${userId}/items/${productId}`);
+  return http.del(`/v1/carts/${userId}/items/${productId}`);
 }
 
 export function reduceItem(userId = DEFAULT_USER_ID, productId, amount = 1) {
-  // PATCH /api/cart/{userId}/items/{productId}?amount=1
-  return http.patch(`/api/v1/cart/${userId}/items/${productId}?amount=${amount}`);
+  return http.patch(`/v1/carts/${userId}/items/${productId}?amount=${amount}`);
 }
