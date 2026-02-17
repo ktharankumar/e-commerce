@@ -1,39 +1,36 @@
 # ============================================================
-# BASE COMPOSE — shared app services
-# 
+# BASE COMPOSE — image-only (no build), works on EC2 as-is
+#
 # USAGE:
-#   Local:  docker compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env up -d
-#   EC2:    docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+#   Local:  docker compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env up -d --build
+#   EC2:    docker compose -f docker-compose.yml -f docker-compose.prod.yml  --env-file .env.prod up -d
 # ============================================================
 
 services:
   shopper-ui:
-    build:
-      context: ../shopper-ui
+    image: ktharankumar/shopper-ui:latest
     container_name: shopper-ui
     ports:
       - "5173:80"
     depends_on:
       - product-service
       - cart-service
+      - user-service
 
   product-service:
     image: ktharankumar/product-service:latest
-    build:
-      context: ../java-maven/products
     container_name: product-service
     environment:
       SERVER_PORT: 8081
       SPRING_DATASOURCE_USERNAME: ${PRODUCT_DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${PRODUCT_DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
     ports:
       - "8081:8081"
 
   cart-service:
     image: ktharankumar/cart-service:latest
-    build:
-      context: ../java-maven/carts
     container_name: cart-service
     depends_on:
       product-service:
@@ -44,21 +41,21 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${CART_DB_PASSWORD}
       PRODUCT_SERVICE_BASEURL: http://product-service:8081
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
     ports:
       - "8080:8080"
 
-#  user-service:
-#    image: ktharankumar/user-service:latest
-#    build:
-#      context: ../java-maven/users
-#    container_name: user-service
-#    environment:
-#      SERVER_PORT: 8082
-#      SPRING_DATASOURCE_USERNAME: ${USER_DB_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${USER_DB_PASSWORD}
-#      SPRING_PROFILES_ACTIVE: docker
-#    ports:
-#      - "8082:8082"
+  user-service:
+    image: ktharankumar/user-service:latest
+    container_name: user-service
+    environment:
+      SERVER_PORT: 8082
+      SPRING_DATASOURCE_USERNAME: ${USER_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${USER_DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
+    ports:
+      - "8082:8082"
 
 volumes:
   grafana_data:

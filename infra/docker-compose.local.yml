@@ -1,10 +1,53 @@
 # ============================================================
-# LOCAL DEV OVERRIDE — adds Postgres containers + monitoring
+# LOCAL DEV OVERRIDE — adds build contexts, Postgres containers + monitoring
 #
-# USAGE: docker compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env up -d
+# USAGE: docker compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env up -d --build
 # ============================================================
 
 services:
+  # ---------- Build contexts + DB overrides ----------
+  shopper-ui:
+    build:
+      context: ../shopper-ui
+
+  product-service:
+    build:
+      context: ../java-maven/products
+    depends_on:
+      product-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/${PRODUCT_DB_NAME}?stringtype=unspecified
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
+
+  cart-service:
+    build:
+      context: ../java-maven/carts
+    depends_on:
+      cart-db:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cart-db:5432/${CART_DB_NAME}
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
+
+  user-service:
+    build:
+      context: ../java-maven/users
+    depends_on:
+      user-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/${USER_DB_NAME}?stringtype=unspecified
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
+
   # ---------- Local Postgres Containers ----------
   user-db:
     image: postgres:16
@@ -53,30 +96,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
-
-  # ---------- Override app services: add DB URLs + depends_on ----------
-  product-service:
-    depends_on:
-      product-db:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/${PRODUCT_DB_NAME}?stringtype=unspecified
-
-  cart-service:
-    depends_on:
-      cart-db:
-        condition: service_healthy
-      product-service:
-        condition: service_started
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://cart-db:5432/${CART_DB_NAME}
-
-  user-service:
-    depends_on:
-      user-db:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/${USER_DB_NAME}?stringtype=unspecified
 
   # ---------- Monitoring & Tools ----------
   prometheus:

@@ -9,14 +9,49 @@ services:
   product-service:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/${PRODUCT_DB_NAME}?stringtype=unspecified
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
 
   cart-service:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/${CART_DB_NAME}
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
 
-#  user-service:
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/${USER_DB_NAME}?stringtype=unspecified
+  user-service:
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/${USER_DB_NAME}?stringtype=unspecified
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
 
+  # ---------- Monitoring ----------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - product-service
+      - cart-service
+      - user-service
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-shoppers123}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    restart: unless-stopped
   # No Postgres containers — RDS handles databases
-  # No Prometheus/Grafana/pgAdmin — saves EC2 resources

@@ -10,4 +10,9 @@ scrape_configs:
   - job_name: "carts-service"
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ["carts-service:8080"]
+      - targets: ["cart-service:8080"]
+
+  - job_name: "user-service"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["user-service:8082"]
