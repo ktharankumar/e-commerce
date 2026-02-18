@@ -10,8 +10,8 @@ services:
   shopper-ui:
     image: ktharankumar/shopper-ui:latest
     container_name: shopper-ui
-    ports:
-      - "5173:80"
+    #ports:
+    #  - "5173:80"
     depends_on:
       - product-service
       - cart-service
@@ -26,8 +26,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${PRODUCT_DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
-    ports:
-      - "8081:8081"
+    #ports:
+    #  - "8081:8081"
 
   cart-service:
     image: ktharankumar/cart-service:latest
@@ -42,8 +42,8 @@ services:
       PRODUCT_SERVICE_BASEURL: http://product-service:8081
       SPRING_PROFILES_ACTIVE: docker
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
-    ports:
-      - "8080:8080"
+    #ports:
+      #- "8080:8080"
 
   user-service:
     image: ktharankumar/user-service:latest
@@ -54,8 +54,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${USER_DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -Xss512k -XX:+UseSerialGC"
-    ports:
-      - "8082:8082"
+    #ports:
+    #  - "8082:8082"
 
 volumes:
   grafana_data:
