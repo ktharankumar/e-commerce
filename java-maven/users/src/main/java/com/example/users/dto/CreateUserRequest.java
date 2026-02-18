@@ -23,5 +23,7 @@ public record CreateUserRequest(
         String lastName,
 
         @Email(message = "Please provide a valid email")
-        @NotNull String email
+        @NotNull String email,
+
+        String role
 ) {}

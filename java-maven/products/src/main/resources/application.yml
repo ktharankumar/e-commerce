@@ -20,14 +20,22 @@ spring:
     show-sql: true
     open-in-view: false
 
+# --- Actuator & Prometheus Metrics ---
 management:
   endpoints:
     web:
       exposure:
-        include: "*"  # Exposes all endpoints
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   info:
     env:
       enabled: true
@@ -37,3 +45,8 @@ info:
     name: Product Service
     description: Product Management API
     version: 1.0.0
+
+# --- JWT Configuration (shared secret with Users service) ---
+app:
+  jwtSecret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  jwtExpirationMs: 86400000

@@ -1,6 +1,7 @@
 package com.example.carts.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Entity
+@Table(name="carts")
 @Getter
 @Setter
-@Table(name="carts")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,15 +23,13 @@ public class Cart {
     private String couponCode;
 
     @Column(name="cart_total")
-    @Setter(lombok.AccessLevel.NONE)
     private BigDecimal cartTotal = BigDecimal.ZERO;
 
     @Version
-    @Setter(lombok.AccessLevel.NONE)
     private Long version;
 
+    @Getter(AccessLevel.NONE)
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Getter(lombok.AccessLevel.NONE)
     private List<CartItems> cartItems = new ArrayList<>();
 
     @Column(name = "user_id")
@@ -40,7 +39,6 @@ public class Cart {
         return Collections.unmodifiableList(cartItems);
     }
 
-    // Helper functions
     public void addCartItem(CartItems item) {
         this.cartItems.add(item);
         item.setCart(this);

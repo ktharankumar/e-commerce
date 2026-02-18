@@ -6,6 +6,7 @@ infra/.env.*
 
 # --- IDEs ---
 .idea/
+.vscode/
 *.iml
 
 # --- Java/Maven ---
@@ -19,3 +20,15 @@ infra/.env.*
 erl_crash.dump
 .rebar3/
 
+# --- Node ---
+**/node_modules/
+**/dist/
+
+# --- OS / temp ---
+.DS_Store
+Thumbs.db
+*.pem
+mvn_err*.txt
+
+# --- Old/legacy folders ---
+Java Maven Services/

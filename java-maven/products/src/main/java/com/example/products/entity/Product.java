@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Entity
+@Table(name = "products")
 @Getter
 @Setter
-@Table(name = "products")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,11 +43,21 @@ public class Product {
     @Transient
     private BigDecimal finalPrice;
 
+    public Product() {
+    }
+
+    public Product(String productName, BigDecimal price, Category category, int availableQuantity, String specifications) {
+        this.productName = productName;
+        this.price = price;
+        this.category = category;
+        this.availableQuantity = availableQuantity;
+        this.specifications = specifications;
+    }
+
     public void calculate_final_price() {
         if (discountPercentage != null) {
             BigDecimal discountAmount = BigDecimal.valueOf(discountPercentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             this.finalPrice = price.subtract(price.multiply(discountAmount));
         }
     }
-
 }

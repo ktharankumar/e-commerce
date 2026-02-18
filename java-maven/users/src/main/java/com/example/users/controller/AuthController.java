@@ -2,6 +2,7 @@ package com.example.users.controller;
 
 import com.example.users.config.AppUserDetails;
 import com.example.users.config.JwtUtils;
+import com.example.users.config.PasswordDecryptor;
 import com.example.users.dto.CreateUserRequest;
 import com.example.users.dto.JwtResponse;
 import com.example.users.dto.LoginRequest;
@@ -28,19 +29,24 @@ public class AuthController {
     private final UserRepo userRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
+    private final PasswordDecryptor passwordDecryptor;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepo userRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepo userRepository, PasswordEncoder encoder, JwtUtils jwtUtils, PasswordDecryptor passwordDecryptor) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
+        this.passwordDecryptor = passwordDecryptor;
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        // Decrypt the AES-encrypted password from the frontend
+        String decryptedPassword = passwordDecryptor.decrypt(loginRequest.getPassword());
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), decryptedPassword));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -75,12 +81,15 @@ public class AuthController {
         User user = new User();
         user.setUserName(signUpRequest.userName());
         user.setEmail(signUpRequest.email());
-        user.setPassword(encoder.encode(signUpRequest.password()));
+        // Decrypt the AES-encrypted password and encode with BCrypt
+        String decryptedPassword = passwordDecryptor.decrypt(signUpRequest.password());
+        user.setPassword(encoder.encode(decryptedPassword));
         user.setFirstName(signUpRequest.firstName());
         user.setLastName(signUpRequest.lastName());
-        
-        // Default role is USER for now
-        user.setRole("USER");
+        // Use role from request: ADMIN = Seller, USER = Buyer (default)
+        String role = signUpRequest.role() != null && signUpRequest.role().equalsIgnoreCase("ADMIN")
+                ? "ADMIN" : "USER";
+        user.setRole(role);
 
         userRepository.save(user);
 

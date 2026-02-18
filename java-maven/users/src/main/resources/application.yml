@@ -2,11 +2,6 @@ server:
   port: ${SERVER_PORT:8082}
 
 spring:
-  security:
-    user:
-      name: "Tharani"
-      password: "Jaganath@25"
-
   application:
     name: USER-SERVICE
 
@@ -22,13 +17,11 @@ spring:
 
   jpa:
     hibernate:
-      #ddl-auto: none
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
     defer-datasource-initialization: false
-
     show-sql: true
-    # This will FORCE the app to crash if the folder is empty or not found
 
+# --- Actuator & Prometheus Metrics ---
 management:
   endpoints:
     web:
@@ -37,6 +30,13 @@ management:
   endpoint:
     health:
       show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:
@@ -51,6 +51,8 @@ logging:
         boot:
           autoconfigure:
             flyway: DEBUG
+
+# --- JWT Configuration ---
 app:
-  jwtSecret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  jwtSecret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   jwtExpirationMs: 86400000

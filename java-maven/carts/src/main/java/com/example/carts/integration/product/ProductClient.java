@@ -17,7 +17,7 @@ public class ProductClient {
 
     public List<ProductSnapshotDTO> getProductsBatch(List<Long> ids) {
         return productRestClient.post()
-                .uri("/products/batch")
+                .uri("/api/v1/products/batch")
                 .body(ids)
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<ProductSnapshotDTO>>() {});

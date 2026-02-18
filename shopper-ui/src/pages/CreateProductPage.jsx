@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CATEGORIES, createProduct } from "../api/productApi";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const EMPTY = {
     productName: "",
@@ -15,6 +16,35 @@ export default function CreateProductPage({ setToast }) {
     const [form, setForm] = useState({ ...EMPTY });
     const [submitting, setSubmitting] = useState(false);
     const nav = useNavigate();
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = isAuthenticated && user?.roles?.includes("ROLE_ADMIN");
+
+    // Redirect if not authenticated or not admin
+    if (!isAuthenticated) {
+        return (
+            <main className="container" style={{ paddingTop: 24 }}>
+                <div className="panel" style={{ textAlign: "center", padding: 40 }}>
+                    <div style={{ fontSize: 48, marginBottom: 12 }}>🔒</div>
+                    <div className="panel-title">Authentication Required</div>
+                    <div className="text-muted" style={{ marginBottom: 16 }}>You need to sign in to add products.</div>
+                    <button className="btn btn-primary" onClick={() => nav("/login")}>Sign In</button>
+                </div>
+            </main>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <main className="container" style={{ paddingTop: 24 }}>
+                <div className="panel" style={{ textAlign: "center", padding: 40 }}>
+                    <div style={{ fontSize: 48, marginBottom: 12 }}>🚫</div>
+                    <div className="panel-title">Not Authorized</div>
+                    <div className="text-muted" style={{ marginBottom: 16 }}>Only administrators can add products.</div>
+                    <button className="btn btn-primary" onClick={() => nav("/")}>Back to Products</button>
+                </div>
+            </main>
+        );
+    }
 
     function set(field) {
         return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -51,14 +81,14 @@ export default function CreateProductPage({ setToast }) {
     }
 
     return (
-        <main className="container">
+        <main className="container" style={{ paddingTop: 24, paddingBottom: 40 }}>
             <div className="page-head">
-                <div className="title">Create New Product</div>
+                <div className="title">➕ Create New Product</div>
+                <div className="text-muted" style={{ marginTop: 4 }}>Add a new product to the catalogue</div>
             </div>
 
             <form className="panel form-panel" onSubmit={handleSubmit}>
                 <div className="form-grid">
-                    {/* Product Name */}
                     <div className="form-group form-full">
                         <label className="form-label" htmlFor="cp-name">Product Name *</label>
                         <input
@@ -68,10 +98,10 @@ export default function CreateProductPage({ setToast }) {
                             onChange={set("productName")}
                             placeholder="e.g. Gaming Laptop"
                             required
+                            autoFocus
                         />
                     </div>
 
-                    {/* Price */}
                     <div className="form-group">
                         <label className="form-label" htmlFor="cp-price">Price (€) *</label>
                         <input
@@ -87,7 +117,6 @@ export default function CreateProductPage({ setToast }) {
                         />
                     </div>
 
-                    {/* Category */}
                     <div className="form-group">
                         <label className="form-label" htmlFor="cp-cat">Category</label>
                         <select
@@ -104,7 +133,6 @@ export default function CreateProductPage({ setToast }) {
                         </select>
                     </div>
 
-                    {/* Discount */}
                     <div className="form-group">
                         <label className="form-label" htmlFor="cp-disc">Discount %</label>
                         <input
@@ -119,7 +147,6 @@ export default function CreateProductPage({ setToast }) {
                         />
                     </div>
 
-                    {/* Quantity */}
                     <div className="form-group">
                         <label className="form-label" htmlFor="cp-qty">Available Quantity *</label>
                         <input
@@ -134,7 +161,6 @@ export default function CreateProductPage({ setToast }) {
                         />
                     </div>
 
-                    {/* Specifications */}
                     <div className="form-group form-full">
                         <label className="form-label" htmlFor="cp-spec">Specifications</label>
                         <textarea
@@ -149,15 +175,11 @@ export default function CreateProductPage({ setToast }) {
                 </div>
 
                 <div className="form-actions">
-                    <button
-                        type="button"
-                        className="btn btn-ghost-dark"
-                        onClick={() => nav("/")}
-                    >
+                    <button type="button" className="btn btn-ghost" onClick={() => nav("/")}>
                         Cancel
                     </button>
                     <button className="btn btn-primary" type="submit" disabled={submitting}>
-                        {submitting ? "Creating…" : "Create Product"}
+                        {submitting ? "Creating…" : "✨ Create Product"}
                     </button>
                 </div>
             </form>

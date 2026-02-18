@@ -3,18 +3,17 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 
-# 4. Download dependencies (this layer is cached unless pom.xml changes)
+# Download dependencies (this layer is cached unless pom.xml changes)
 RUN mvn dependency:go-offline -B
 
-# 5. NOW copy your actual source code
+# Copy source code
 COPY src ./src
 
-# 6. Package the application
-RUN mvn package -DskipTests
-
+# Package the application (skip tests — they need a DB not available at build time)
+RUN mvn clean package -DskipTests
 
 # ---- runtime stage ----
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8082

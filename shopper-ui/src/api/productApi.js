@@ -6,8 +6,17 @@ export const CATEGORIES = [
   "HOME_GOODS",
   "SHOES",
   "FOODS",
-  "OTHER"
+  "OTHER",
 ];
+
+export const CATEGORY_ICONS = {
+  ELECTRONICS: "⚡",
+  CLOTHING: "👕",
+  HOME_GOODS: "🏠",
+  SHOES: "👟",
+  FOODS: "🍕",
+  OTHER: "📦",
+};
 
 export function getProducts(category) {
   const qs = category ? `?category=${encodeURIComponent(category)}` : "";
