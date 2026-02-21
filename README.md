@@ -126,6 +126,17 @@ Browser → Nginx (SSL) → shopper-ui (Nginx) → React SPA
 
 ---
 
+## 🏆 Engineering Best Practices (Industry Standards)
+
+To ensure this application meets enterprise and production standards, it strictly adheres to the following principles:
+
+1. **Database Migrations (Flyway/Liquibase):** Infrastructure as Code (IaC) for databases. Every schema change is version-controlled via SQL scripts (e.g., `V1__init_cart_schema.sql`). This prevents schema drift across environments and makes database setups reproducible.
+2. **Constructor-Based Dependency Injection:** Field injection (`@Autowired`) is completely avoided. Dependencies are injected via final fields in the constructor. This guarantees immutability, prevents `NullPointerException`s, and simplifies mocking during unit testing.
+3. **Strict Transaction Management (`@Transactional`):** All database mutation operations (e.g., adding to cart, checkout flow) are strictly wrapped in Spring's `@Transactional` boundaries to ensure ACID compliance and prevent partial commits on failure.
+4. **Comprehensive Documentation:** Full OpenAPI 3 (Swagger UI) integration for clear API contracts, alongside an in-depth README mapping out the microservices architecture, data flow, and deployment instructions.
+
+---
+
 ## 📂 Project Structure
 
 ```

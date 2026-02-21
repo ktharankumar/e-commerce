@@ -6,6 +6,7 @@ import com.example.users.config.PasswordDecryptor;
 import com.example.users.dto.CreateUserRequest;
 import com.example.users.dto.JwtResponse;
 import com.example.users.dto.LoginRequest;
+import com.example.users.dto.MessageResponse;
 import com.example.users.entity.User;
 import com.example.users.repository.UserRepo;
 import jakarta.validation.Valid;
@@ -68,13 +69,13 @@ public class AuthController {
         if (userRepository.existsByUserName(signUpRequest.userName())) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error: Username is already taken!");
+                    .body(new MessageResponse("Error: Username is already taken!"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.email())) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error: Email is already in use!");
+                    .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
@@ -93,6 +94,6 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!!!"));
     }
 }
